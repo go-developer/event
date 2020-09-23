@@ -17,6 +17,7 @@ package define
 type Message struct {
 	Type      string                 `json:"type"`      // 消息类型
 	Topic     string                 `json:"topic"`     // 订阅的主题
+	Key       string                 `json:"key"`       // 用于数据分区(仅针对kafka有效)
 	Driver    string                 `json:"driver"`    // 驱动类型
 	Timestamp int64                  `json:"timestamp"` // 时间戳
 	Data      map[string]interface{} `json:"data"`      // 数据

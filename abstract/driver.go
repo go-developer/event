@@ -37,5 +37,5 @@ type IDriver interface {
 	// Author : go_developer@163.com<张德满>
 	//
 	// Date : 7:51 下午 2020/9/23
-	Subscribe() chan *define.Message
+	Subscribe(topic string) chan *define.Message
 }

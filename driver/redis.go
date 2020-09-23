@@ -10,6 +10,8 @@
 package driver
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -64,6 +66,10 @@ func (rd *redisDriver) Init() error {
 //
 // Date : 8:29 下午 2020/9/23
 func (rd *redisDriver) Publish(message *define.Message) error {
+	byteData, _ := json.Marshal(message)
+	if err := rd.instance.Publish(context.Background(), message.Topic, string(byteData)).Err(); nil != err {
+		return err
+	}
 	return nil
 }
 
@@ -73,6 +79,8 @@ func (rd *redisDriver) Publish(message *define.Message) error {
 //
 // Date : 8:31 下午 2020/9/23
 
-func (rd *redisDriver) Subscribe() chan *define.Message {
+func (rd *redisDriver) Subscribe(topic string) chan *define.Message {
+	pubSubRes := rd.instance.Subscribe(context.Background(), topic)
+	pubSubRes.Subscribe(context.Background())
 	return rd.messageChan
 }
