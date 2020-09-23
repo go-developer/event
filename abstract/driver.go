@@ -24,7 +24,7 @@ type IDriver interface {
 	// Author : go_developer@163.com<张德满>
 	//
 	// Date : 3:53 下午 2020/9/23
-	Init(cf *define.DriverConfig) error
+	Init() error
 	// Publish 发布事件消息
 	//
 	// Author : go_developer@163.com<张德满>
@@ -32,10 +32,10 @@ type IDriver interface {
 	// Date : 7:51 下午 2020/9/23
 	Publish(message *define.Message) error
 
-	// subscribe 订阅事件消息
+	// Subscribe 订阅事件消息
 	//
 	// Author : go_developer@163.com<张德满>
 	//
 	// Date : 7:51 下午 2020/9/23
-	subscribe() <-chan *define.Message
+	Subscribe() chan *define.Message
 }

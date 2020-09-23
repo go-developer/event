@@ -34,3 +34,21 @@ type DriverConfig struct {
 	Username string `json:"username"` // 账号
 	Password string `json:"password"` // 密码
 }
+
+// RedisDriverConfig redis驱动的配置
+//
+// Author : go_developer@163.com<张德满>
+//
+// Date : 8:49 下午 2020/9/23
+type RedisDriverConfig struct {
+	Host     string `json:"host"`     // 主机
+	Port     int    `json:"port"`     // 端口
+	Password string `json:"password"` // 密码
+	DB       int    `json:"db"`       // db
+	Timeout  struct {
+		Connect int `json:"connect"`
+		Write   int `json:"write"`
+		Read    int `json:"read"`
+	} `json:"timeout"` // 超时相关配置
+	Buffer int64 `json:"buffer"` // 消息订阅缓冲区大小
+}
