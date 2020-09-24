@@ -30,9 +30,10 @@ func NewRedisDriver(cf *define.RedisDriverConfig) abstract.IDriver {
 }
 
 type redisDriver struct {
-	cf          *define.RedisDriverConfig // redis 配置
-	messageChan chan *define.Message      // 数据缓冲chan
-	instance    *redis.Client
+	cf            *define.RedisDriverConfig // redis 配置
+	messageChan   chan *define.Message      // 数据缓冲chan
+	instance      *redis.Client             // redis 缓冲chan
+	exceptionChan chan *define.Exception    // 异常信息队列
 }
 
 // Init 初始化
@@ -57,6 +58,7 @@ func (rd *redisDriver) Init() error {
 		rd.cf.Buffer = define.RedisDriverDefaultBuffer
 	}
 	rd.messageChan = make(chan *define.Message, rd.cf.Buffer)
+	rd.exceptionChan = make(chan *define.Exception, rd.cf.Buffer)
 	return nil
 }
 
@@ -78,9 +80,39 @@ func (rd *redisDriver) Publish(message *define.Message) error {
 // Author : go_developer@163.com<张德满>
 //
 // Date : 8:31 下午 2020/9/23
+func (rd *redisDriver) Subscribe(topic string) <-chan *define.Message {
+	go func() {
+		// 拉取数据
+		pubSubRes := rd.instance.Subscribe(context.Background(), topic)
+		for mes := range pubSubRes.Channel() {
+			var (
+				mesData define.Message
+				err     error
+			)
+			if err = json.Unmarshal([]byte(mes.Payload), &mesData); nil != err {
+				go func() {
+					rd.exceptionChan <- &define.Exception{
+						Type:          define.ExceptionTypeFormatError,
+						Code:          0,
+						SubscribeData: mes.Payload,
+					}
+				}()
+				continue
+			}
+			rd.messageChan <- &mesData
+			fmt.Println("订阅到的redis通知消息:", mesData)
+		}
+	}()
 
-func (rd *redisDriver) Subscribe(topic string) chan *define.Message {
-	pubSubRes := rd.instance.Subscribe(context.Background(), topic)
-	pubSubRes.Subscribe(context.Background())
 	return rd.messageChan
+}
+
+// GetException 异常信息
+//
+// Author : go_developer@163.com<张德满>
+//
+// Date : 12:06 下午 2020/9/24
+
+func (rd *redisDriver) GetException() <-chan *define.Exception {
+	return rd.exceptionChan
 }

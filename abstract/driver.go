@@ -37,5 +37,12 @@ type IDriver interface {
 	// Author : go_developer@163.com<张德满>
 	//
 	// Date : 7:51 下午 2020/9/23
-	Subscribe(topic string) chan *define.Message
+	Subscribe(topic string) <-chan *define.Message
+
+	// GetException 获取异常信息
+	//
+	// Author : go_developer@163.com<张德满>
+	//
+	// Date : 12:06 下午 2020/9/24
+	GetException() <-chan *define.Exception
 }
