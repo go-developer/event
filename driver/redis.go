@@ -90,13 +90,7 @@ func (rd *redisDriver) Subscribe(topic string) <-chan *define.Message {
 				err     error
 			)
 			if err = json.Unmarshal([]byte(mes.Payload), &mesData); nil != err {
-				go func() {
-					rd.exceptionChan <- &define.Exception{
-						Type:          define.ExceptionTypeFormatError,
-						Code:          0,
-						SubscribeData: mes.Payload,
-					}
-				}()
+				rd.setExceptionInfo(define.ExceptionTypeFormatError, err.Error(), mes.Payload)
 				continue
 			}
 			rd.messageChan <- &mesData
@@ -107,12 +101,49 @@ func (rd *redisDriver) Subscribe(topic string) <-chan *define.Message {
 	return rd.messageChan
 }
 
+// StartSubscribeWithHandler 支持直接处理数据
+//
+// Author : go_developer@163.com<张德满>
+//
+// Date : 2:12 下午 2020/9/24
+func (rd *redisDriver) StartSubscribeWithHandler(topic string, handler abstract.IHandler) {
+	// 拉取数据
+	pubSubRes := rd.instance.Subscribe(context.Background(), topic)
+	for mes := range pubSubRes.Channel() {
+		var (
+			mesData define.Message
+			err     error
+		)
+		if err = json.Unmarshal([]byte(mes.Payload), &mesData); nil != err {
+			rd.setExceptionInfo(define.ExceptionTypeFormatError, err.Error(), mes.Payload)
+			continue
+		}
+		if err = handler.Handler(&mesData); nil != err {
+			rd.setExceptionInfo(define.ExceptionTypeHandlerError, err.Error(), mes.Payload)
+		}
+	}
+}
+
 // GetException 异常信息
 //
 // Author : go_developer@163.com<张德满>
 //
 // Date : 12:06 下午 2020/9/24
-
 func (rd *redisDriver) GetException() <-chan *define.Exception {
 	return rd.exceptionChan
+}
+
+// ...
+//
+// Author : zhangdeman001@ke.com<张德满>
+//
+// Date : 2:15 下午 2020/9/24
+func (rd *redisDriver) setExceptionInfo(exceptionType string, message string, data string) {
+	go func() {
+		rd.exceptionChan <- &define.Exception{
+			Type:          exceptionType,
+			Message:       message,
+			SubscribeData: data,
+		}
+	}()
 }
