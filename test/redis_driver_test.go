@@ -33,7 +33,7 @@ func getRedisDriverInstance() abstract.IDriver {
 		}{10, 10, 10},
 		Buffer: 0,
 	}
-	rd := driver.NewRedisDriver(rdc)
+	rd, _ := driver.NewRedisDriver(rdc)
 	return rd
 }
 
@@ -60,7 +60,7 @@ func TestRedisDriver(t *testing.T) {
 	rd := getRedisDriverInstance()
 	topic := "test-message"
 	go func() {
-		for mes := range rd.Subscribe(topic) {
+		for mes := range rd.Subscribe() {
 			fmt.Println("订阅到的消息 :", mes)
 		}
 	}()
@@ -76,7 +76,7 @@ func TestRedisDriverWithHandler(t *testing.T) {
 	rd := getRedisDriverInstance()
 	topic := "test-message"
 	handler := new(testRedisDriverWithHandler)
-	rd.StartSubscribeWithHandler(topic, handler)
+	rd.SubscribeWithHandler(handler)
 	sendMessage(rd, topic, 10)
 	go func() {
 		for {

@@ -25,14 +25,14 @@ import (
 // Author : go_developer@163.com<张德满>
 //
 // Date : 8:32 下午 2020/9/23
-func NewRedisDriver(cf *define.RedisDriverConfig) abstract.IDriver {
+func NewRedisDriver(cf *define.RedisDriverConfig) (abstract.IDriver, error) {
 	rd := &redisDriver{
 		cf: cf,
 	}
 	if err := rd.Init(); nil != err {
-		panic(err.Error())
+		return nil, err
 	}
-	return rd
+	return rd, nil
 }
 
 type redisDriver struct {
@@ -75,7 +75,7 @@ func (rd *redisDriver) Init() error {
 // Date : 8:29 下午 2020/9/23
 func (rd *redisDriver) Publish(message *define.Message) error {
 	byteData, _ := json.Marshal(message)
-	if err := rd.instance.Publish(context.Background(), message.Topic, string(byteData)).Err(); nil != err {
+	if err := rd.instance.Publish(context.Background(), rd.cf.Topic, string(byteData)).Err(); nil != err {
 		return err
 	}
 	return nil
@@ -86,10 +86,10 @@ func (rd *redisDriver) Publish(message *define.Message) error {
 // Author : go_developer@163.com<张德满>
 //
 // Date : 8:31 下午 2020/9/23
-func (rd *redisDriver) Subscribe(topic string) <-chan *define.Message {
+func (rd *redisDriver) Subscribe() <-chan *define.Message {
 	go func() {
 		// 拉取数据
-		pubSubRes := rd.instance.Subscribe(context.Background(), topic)
+		pubSubRes := rd.instance.Subscribe(context.Background(), rd.cf.Topic)
 		for mes := range pubSubRes.Channel() {
 			var (
 				mesData define.Message
@@ -111,10 +111,10 @@ func (rd *redisDriver) Subscribe(topic string) <-chan *define.Message {
 // Author : go_developer@163.com<张德满>
 //
 // Date : 2:12 下午 2020/9/24
-func (rd *redisDriver) StartSubscribeWithHandler(topic string, handler abstract.IHandler) {
+func (rd *redisDriver) SubscribeWithHandler(handler abstract.IHandler) {
 	go func() {
 		// 拉取数据
-		pubSubRes := rd.instance.Subscribe(context.Background(), topic)
+		pubSubRes := rd.instance.Subscribe(context.Background(), rd.cf.Topic)
 		for mes := range pubSubRes.Channel() {
 			var (
 				mesData define.Message
@@ -140,7 +140,7 @@ func (rd *redisDriver) GetException() <-chan *define.Exception {
 	return rd.exceptionChan
 }
 
-// ...
+// setExceptionInfo 设置异常信息
 //
 // Author : zhangdeman001@ke.com<张德满>
 //

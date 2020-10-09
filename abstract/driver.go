@@ -37,14 +37,14 @@ type IDriver interface {
 	// Author : go_developer@163.com<张德满>
 	//
 	// Date : 7:51 下午 2020/9/23
-	Subscribe(topic string) <-chan *define.Message
+	Subscribe() <-chan *define.Message
 
-	// StartSubscribeWithHandler 支持订阅到数据之后,直接按照指定的逻辑处理
+	// SubscribeWithHandler 支持订阅到数据之后,直接按照指定的逻辑处理
 	//
 	// Author : go_developer@163.com<张德满>
 	//
 	// Date : 2:10 下午 2020/9/24
-	StartSubscribeWithHandler(topic string, handler IHandler)
+	SubscribeWithHandler(handler IHandler)
 
 	// GetException 获取异常信息
 	//

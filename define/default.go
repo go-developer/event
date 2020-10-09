@@ -13,3 +13,10 @@ const (
 	// RedisDriverDefaultBuffer redis驱动消息缓冲区默认大小
 	RedisDriverDefaultBuffer = 1
 )
+
+const (
+	// KafkaDriverDefaultBuffer kafka驱动默认buffer缓冲区大小
+	KafkaDriverDefaultBuffer = 1
+	// KafkaDriverDefaultConsumerCount kafka驱动默认消费者数量
+	KafkaDriverDefaultConsumerCount = 3
+)
