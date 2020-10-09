@@ -26,7 +26,13 @@ import (
 //
 // Date : 8:32 下午 2020/9/23
 func NewRedisDriver(cf *define.RedisDriverConfig) abstract.IDriver {
-	return &redisDriver{}
+	rd := &redisDriver{
+		cf: cf,
+	}
+	if err := rd.Init(); nil != err {
+		panic(err.Error())
+	}
+	return rd
 }
 
 type redisDriver struct {
