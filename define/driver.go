@@ -89,3 +89,14 @@ const (
 	// 同时作为 生产者 & 消费者客户端
 	KafkaClientTypeBoth = 3
 )
+
+// EtcdDriverConfig 基于etcd的事件发布订阅
+//
+// Author : go_developer@163.com<张德满>
+//
+// Date : 6:32 下午 2020/10/9
+type EtcdDriverConfig struct {
+	Endpoints   []string      `json:"endpoints"`    // etcd节点信息
+	DialTimeout time.Duration `json:"dial_timeout"` // 超时配置
+	Topic       string        `json:"topic"`        // 监听的topic
+}
