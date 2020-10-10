@@ -29,6 +29,9 @@ func NewEtcdDriver(edc *define.EtcdDriverConfig) (abstract.IDriver, error) {
 		messageChan:   make(chan *define.Message, edc.Buffer),
 		exceptionChan: make(chan *define.Exception, edc.Buffer),
 	}
+	if err := ed.Init(); nil != err {
+		return nil, err
+	}
 	return ed, nil
 }
 

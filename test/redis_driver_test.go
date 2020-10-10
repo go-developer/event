@@ -65,6 +65,7 @@ func TestRedisDriver(t *testing.T) {
 		}
 	}()
 	sendMessage(rd, topic, 10)
+	time.Sleep(2 * time.Second)
 }
 
 // TestRedisDriverWithHandler 测试带handler的消息订阅

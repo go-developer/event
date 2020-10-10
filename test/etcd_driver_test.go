@@ -20,12 +20,15 @@ import (
 )
 
 func getEtcdDriver() abstract.IDriver {
-	ed, _ := driver.NewEtcdDriver(&define.EtcdDriverConfig{
+	ed, err := driver.NewEtcdDriver(&define.EtcdDriverConfig{
 		Endpoints:   []string{"127.0.0.1:2379"},
-		DialTimeout: 5,
+		DialTimeout: 5 * time.Second,
 		Topic:       "event-queue",
 		Buffer:      1,
 	})
+	if nil != err {
+		panic(err.Error())
+	}
 	return ed
 }
 
@@ -35,7 +38,7 @@ func getEtcdDriver() abstract.IDriver {
 //
 // Date : 12:00 下午 2020/10/10
 func TestSubscribe(t *testing.T) {
-	ed := getRedisDriverInstance()
+	ed := getEtcdDriver()
 	go func() {
 		for mes := range ed.Subscribe() {
 			fmt.Println("订阅到的消息 : ", mes)
@@ -51,4 +54,5 @@ func TestSubscribe(t *testing.T) {
 			Data:      map[string]interface{}{"data": "etcd数据", "index": i},
 		})
 	}
+	time.Sleep(2 * time.Second)
 }
