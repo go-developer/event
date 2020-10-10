@@ -20,3 +20,10 @@ const (
 	// KafkaDriverDefaultConsumerCount kafka驱动默认消费者数量
 	KafkaDriverDefaultConsumerCount = 3
 )
+
+const (
+	// EtcdDriverDefaultBuffer etcd驱动默认buffer大小
+	EtcdDriverDefaultBuffer = 1
+	// EtcdDriverDefaultTimeout etcd 驱动默认超时时间
+	EtcdDriverDefaultTimeout = 1000
+)

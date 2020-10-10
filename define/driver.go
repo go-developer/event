@@ -96,8 +96,8 @@ const (
 //
 // Date : 6:32 下午 2020/10/9
 type EtcdDriverConfig struct {
-	Endpoints   []string      `json:"endpoints"`    // etcd节点信息
-	DialTimeout time.Duration `json:"dial_timeout"` // 超时配置
-	Topic       string        `json:"topic"`        // 监听的topic
-	Buffer      int           `json:"buffer"`       // 数据缓冲区大小
+	Endpoints   []string `json:"endpoints"`    // etcd节点信息
+	DialTimeout int64    `json:"dial_timeout"` // 超时配置, 单位: ms
+	Topic       string   `json:"topic"`        // 监听的topic
+	Buffer      int      `json:"buffer"`       // 数据缓冲区大小
 }

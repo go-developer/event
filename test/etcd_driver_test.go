@@ -2,7 +2,7 @@
 //
 // Author: go_developer@163.com<张德满>
 //
-// File:  etcd_driver_test.go.go
+// File:  etcd_driver_test.go
 //
 // Description: etcd_driver_test.go etcd 驱动的测试
 //
@@ -22,7 +22,7 @@ import (
 func getEtcdDriver() abstract.IDriver {
 	ed, err := driver.NewEtcdDriver(&define.EtcdDriverConfig{
 		Endpoints:   []string{"127.0.0.1:2379"},
-		DialTimeout: 5 * time.Second,
+		DialTimeout: 500,
 		Topic:       "event-queue",
 		Buffer:      1,
 	})

@@ -12,6 +12,7 @@ package driver
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/go-developer/event/abstract"
@@ -48,12 +49,18 @@ type etcdDriver struct {
 //
 // Date : 6:49 下午 2020/10/9
 func (ed *etcdDriver) Init() error {
+	if ed.edc.Buffer <= 0 {
+		ed.edc.Buffer = define.EtcdDriverDefaultBuffer
+	}
+	if ed.edc.DialTimeout <= 0 {
+		ed.edc.DialTimeout = define.EtcdDriverDefaultTimeout
+	}
 	var (
 		err error
 	)
 	if ed.client, err = clientv3.New(clientv3.Config{
 		Endpoints:   ed.edc.Endpoints,
-		DialTimeout: ed.edc.DialTimeout,
+		DialTimeout: time.Duration(ed.edc.DialTimeout) * time.Millisecond,
 	}); nil != err {
 		return err
 	}
