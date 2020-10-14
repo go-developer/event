@@ -161,7 +161,7 @@ func (kd *kafkaDriver) initConsumer() error {
 	if kd.kdc.Buffer <= 0 {
 		kd.kdc.Buffer = define.KafkaDriverDefaultBuffer
 	}
-	kd.consumer = make([]*cluster.Consumer, kd.kdc.PartitionCount)
+	kd.consumer = make([]*cluster.Consumer, 0)
 	// 生成GroupID,确保每台机器的GroupID不一样,每台机器都可以订阅到消息
 	serverIP, err := util.ProjectUtil.GetServerIP()
 	if nil != err {
@@ -209,8 +209,8 @@ func (kd *kafkaDriver) initProducer() error {
 //
 // Date : 4:36 下午 2020/10/9
 func (kd *kafkaDriver) startConsumer() {
-	for _, consumer := range kd.consumer {
-		go func() {
+	for _, c := range kd.consumer {
+		go func(consumer *cluster.Consumer) {
 			for msg := range consumer.Messages() {
 				offset := strconv.FormatInt(msg.Offset, 10)
 				consumer.MarkOffset(msg, offset)
@@ -221,7 +221,7 @@ func (kd *kafkaDriver) startConsumer() {
 				}
 				kd.messageChan <- &data
 			}
-		}()
+		}(c)
 	}
 }
 
